@@ -87,39 +87,25 @@ To get Whiz.it up and running on your local machine, follow these steps:
     CACHE_DEFAULT_TIMEOUT = 300
 
     # Mail
-    MAIL_SERVER = 'your_mail_server.com'  # Replace with your mail server
-    MAIL_PORT = 587                      # Or your mail server port
-    MAIL_USE_TLS = True                  # Or False, depending on your server
-    MAIL_USERNAME = 'your_email@example.com'    # Replace with your email address
+    MAIL_SERVER = 'your_mail_server.com' 
+    MAIL_PORT = 587                     
+    MAIL_USE_TLS = True                 
+    MAIL_USERNAME = 'your_email@example.com'   
     MAIL_PASSWORD = ''
-    MAIL_DEFAULT_SENDER = 'Whiz.it <noreply@example.com>' # Replace with your desired sender
+    MAIL_DEFAULT_SENDER = 'Whiz.it <noreply@example.com>' 
     ```
     **Note:** Make sure to replace the placeholder values (e.g., `your_mail_server.com`, email addresses, passwords, JWT secret key, and Google API key) with your actual configuration.
 
-4.  **Initialize the database (from `serverA`):**
-    ```bash
-    # Example for Flask-SQLAlchemy (adjust based on your ORM/database setup in run.py)
-    # Assuming your Flask app instance is named 'app'
-    python
-    from run import app
-    with app.app_context():
-        # Your database initialization commands here
-        # For example, if using Flask-SQLAlchemy:
-        from flask_sqlalchemy import SQLAlchemy
-        db = SQLAlchemy(app)
-        db.create_all()
-    exit()
-    ```
-    *(Adjust the commands above based on how you've integrated your database in the `run.py` file.)*
+    
 
-5.  **Run the Redis server:**
+4.  **Run the Redis server:**
     Ensure your Redis server is running. You might need to start it in a separate terminal if it's not already running as a service.
 
     ```bash
     redis-server
     ```
 
-6.  **Run the Celery worker and beat (from `serverA`):**
+5.  **Run the Celery worker and beat (from `serverA`):**
     Open two separate terminal windows in the `serverA` directory:
     ```bash
     celery -A run.celery worker -l info
@@ -127,7 +113,7 @@ To get Whiz.it up and running on your local machine, follow these steps:
     ```
     *(Assuming you have initialized your Celery app instance as `celery` in your `run.py` file.)*
 
-7.  **Run the Flask development server (from `serverA`):**
+6.  **Run the Flask development server (from `serverA`):**
     ```bash
     python run.py
     ```
@@ -135,7 +121,7 @@ To get Whiz.it up and running on your local machine, follow these steps:
 
 
 
-8.  **Configure frontend environment variables:**
+7.  **Configure frontend environment variables:**
     Create a `.env` file in the `frontend` directory (if needed) to configure API endpoints (e.g., pointing to `http://localhost:5000`) or other environment-specific settings.
 
 
