@@ -50,7 +50,6 @@ To get Whiz.it up and running on your local machine, follow these steps:
 * Redis server installed and running
 * Google Cloud Project with the Generative AI API enabled and API key configured
 * Email service credentials for Flask-Mailman
-
 ### Installation
 
 1.  **Clone the repository:**
@@ -59,59 +58,87 @@ To get Whiz.it up and running on your local machine, follow these steps:
     cd whiz.it
     ```
 
-2.  **Set up the backend:**
+2.  **Set up the backend (ServerA):**
     ```bash
-    cd backend
+    cd serverA
     python -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
     pip install -r requirements.txt
     ```
 
-3.  **Configure environment variables:**
-    Create a `.env` file in the `backend` directory and configure the necessary environment variables, including:
-    * Flask application settings (e.g., `FLASK_APP`, `FLASK_ENV`)
-    * Redis connection details (`REDIS_URL`)
-    * Celery broker and backend URLs (`CELERY_BROKER_URL`, `CELERY_RESULT_BACKEND`)
-    * Google Generative AI API key (`GOOGLE_API_KEY`)
-    * Email configuration for Flask-Mailman (e.g., `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`)
-    * Database connection details (if applicable)
+3.  **Configure environment variables for the backend:**
+    Create a `.env` file in the `serverA` directory and configure the following environment variables:
+    ```
+    GOOGLE_API_KEY = ''
+    # Database
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///quizmdb.db'
 
-4.  **Initialize the database:**
+    # JWT
+    JWT_SECRET_KEY = ''
+
+    # Redis and Celery
+    REDIS_URL = 'redis://localhost:6379/0'
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+    # Caching
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_URL = 'redis://localhost:6379/0'
+    CACHE_DEFAULT_TIMEOUT = 300
+
+    # Mail
+    MAIL_SERVER = 'your_mail_server.com'  # Replace with your mail server
+    MAIL_PORT = 587                      # Or your mail server port
+    MAIL_USE_TLS = True                  # Or False, depending on your server
+    MAIL_USERNAME = 'your_email@example.com'    # Replace with your email address
+    MAIL_PASSWORD = ''
+    MAIL_DEFAULT_SENDER = 'Whiz.it <noreply@example.com>' # Replace with your desired sender
+    ```
+    **Note:** Make sure to replace the placeholder values (e.g., `your_mail_server.com`, email addresses, passwords, JWT secret key, and Google API key) with your actual configuration.
+
+4.  **Initialize the database (from `serverA`):**
     ```bash
-    # Example for Flask-SQLAlchemy (adjust based on your ORM/database)
-    flask db init
-    flask db migrate -m "Initial migration"
-    flask db upgrade
+    # Example for Flask-SQLAlchemy (adjust based on your ORM/database setup in run.py)
+    # Assuming your Flask app instance is named 'app'
+    python
+    from run import app
+    with app.app_context():
+        # Your database initialization commands here
+        # For example, if using Flask-SQLAlchemy:
+        from flask_sqlalchemy import SQLAlchemy
+        db = SQLAlchemy(app)
+        db.create_all()
+    exit()
+    ```
+    *(Adjust the commands above based on how you've integrated your database in the `run.py` file.)*
+
+5.  **Run the Redis server:**
+    Ensure your Redis server is running. You might need to start it in a separate terminal if it's not already running as a service.
+
+    ```bash
+    redis-server
     ```
 
-5.  **Run the Celery worker and beat:**
-    Open two separate terminal windows in the `backend` directory:
+6.  **Run the Celery worker and beat (from `serverA`):**
+    Open two separate terminal windows in the `serverA` directory:
     ```bash
-    celery -A your_app_name.celery worker -l info
-    celery -A your_app_name.celery beat -l info
+    celery -A run.celery worker -l info
+    celery -A run.celery beat -l info
     ```
-    *(Replace `your_app_name` with the name of your Flask application instance)*
+    *(Assuming you have initialized your Celery app instance as `celery` in your `run.py` file.)*
 
-6.  **Run the Flask development server:**
+7.  **Run the Flask development server (from `serverA`):**
     ```bash
-    flask run
+    python run.py
     ```
+    The backend API will likely be accessible at `http://localhost:5000`.
 
-7.  **Set up the frontend:**
-    ```bash
-    cd ../frontend
-    npm install  # Or yarn install
-    ```
+
 
 8.  **Configure frontend environment variables:**
-    Create a `.env` file in the `frontend` directory (if needed) to configure API endpoints or other environment-specific settings.
+    Create a `.env` file in the `frontend` directory (if needed) to configure API endpoints (e.g., pointing to `http://localhost:5000`) or other environment-specific settings.
 
-9.  **Run the Vue.js development server:**
-    ```bash
-    npm run serve  # Or yarn serve
-    ```
 
-    The frontend application should now be accessible at `http://localhost:8080` (or a different port if configured). The backend API will likely be running on `http://localhost:5000`.
 
 ## ⚙️ Usage
 
@@ -132,17 +159,47 @@ Administrators can access the admin panel (usually at a specific route like `/ad
 
 ## 🖼️ Screenshots
 
-*(Consider adding a `screenshots` folder and including a few enticing screenshots of the UI here to showcase the modern and clean design.)*
+Here are some screenshots of the application:
+
+### User Dashboard
+![User Dashboard](screenshots/userdash.png)
+
+### AI Report
+![AI Report](screenshots/aireport.png)
+
+### Landing Page
+![Landing Page](screenshots/land.png)
+
+### Login Page
+![Login Page](screenshots/login.png)
+
+### User Profile
+![User Profile](screenshots/profile.png)
+
+### Quiz Page
+![Quiz Page](screenshots/quiz.png)
+
+### Summary Page
+![Summary Page](screenshots/summary.png)
+
+### AI Feedback
+![AI Feedback](screenshots/feedback.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admindash.png)
+
+### Admin Panel
+![Admin Panel](screenshots/adminp.png)
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
 
 ## 🙏 Acknowledgements
 
 * Thanks to the developers of Flask, Vue.js, Celery, Redis, Flask-Mailman, and Google Generative AI for their amazing tools and libraries.
-* *(Optional: Mention any other libraries, resources, or individuals who contributed to the project.)*
+* *Also I am grateful to the IITM BS Modern Application Dedvelopmet team for their continued support throughout*
 
 ## 📬 Contact
-
-*(Optional: Add your contact information or a link to your portfolio/website.)*
+*atharvkhare18@gmail.com*
+*(atharvk4u.vercel.app)*
