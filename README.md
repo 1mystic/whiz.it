@@ -67,7 +67,7 @@ To get Whiz.it up and running on your local machine, follow these steps:
     ```
 
 3.  **Configure environment variables for the backend:**
-    Create a `.env` file in the `serverA` directory and configure the following environment variables:
+    Create a `.env` file in the `root` directory and configure the following environment variables:
     ```
     GOOGLE_API_KEY = ''
     # Database
